@@ -7,9 +7,17 @@ import {
   LockClosedIcon, 
   UserIcon, 
   PhoneIcon,
-  CubeIcon 
+  CubeIcon,
+  ExclamationCircleIcon
 } from '@heroicons/react/24/outline';
+import { useActionState } from 'react';
+import { registerUser } from '@/app/lib/actions';
+
 export default function RegisterPage() {
+  const [errorMessage, formAction, isPending] = useActionState(
+    registerUser,
+    undefined,
+  );
   return (
     <main className={`${poppins.className} min-h-screen bg-[#f0fdf4] flex flex-col items-center justify-center p-4 py-12`}>
       {/* Titles */}
@@ -22,7 +30,7 @@ export default function RegisterPage() {
       <div className="w-full max-w-md bg-white border border-emerald-500 rounded-lg p-8 shadow-sm mb-6">
         <h2 className="text-xl font-bold text-black mb-6">daftar Akun</h2>
 
-        <form className="flex flex-col gap-4">
+        <form action={formAction} className="flex flex-col gap-4">
           {/* Nama Lengkap */}
           <div>
             <label className="flex items-center gap-2 text-sm font-bold text-black mb-2">
@@ -103,10 +111,25 @@ export default function RegisterPage() {
 
           <button 
             type="submit"
-            className="w-full bg-[#00c853] hover:bg-[#00b248] text-white font-bold py-3 rounded-md mt-4 transition-colors text-sm"
+            aria-disabled={isPending}
+            className="w-full bg-[#00c853] hover:bg-[#00b248] text-white font-bold py-3 rounded-md mt-4 transition-colors text-sm aria-disabled:opacity-50"
           >
-            Daftar Sekarang
+            {isPending ? 'Memproses Pendaftaran...' : 'Daftar Sekarang'}
           </button>
+
+          {/* Menampilkan pesan error jika daftar gagal atau password tidak cocok */}
+          <div
+            className="flex h-8 items-end space-x-1"
+            aria-live="polite"
+            aria-atomic="true"
+          >
+            {errorMessage && (
+              <>
+                <ExclamationCircleIcon className="h-5 w-5 text-red-500" />
+                <p className="text-sm text-red-500">{errorMessage}</p>
+              </>
+            )}
+          </div>
 
           <div className="text-center mt-2">
             <p className="text-sm font-bold text-black">
@@ -114,14 +137,6 @@ export default function RegisterPage() {
             </p>
           </div>
         </form>
-      </div>
-
-      {/* Demo Credentials */}
-      <div className="text-center text-sm mb-10">
-        <p className="text-emerald-700 font-bold mb-2">Untuk mencoba aplikasi, gunakan akun demo:</p>
-        <p className="text-black mb-1">Pelanggan: <span className="font-bold">siti@example.com</span></p>
-        <p className="text-black mb-1">Kurir: <span className="font-bold">budi@example.com</span></p>
-        <p className="text-gray-500 text-xs mt-1">(Password: apa saja)</p>
       </div>
 
       {/* Footer */}
