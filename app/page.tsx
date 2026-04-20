@@ -5,54 +5,26 @@ import {
   TruckIcon, 
   MapPinIcon, 
   CurrencyDollarIcon, 
-  GlobeAltIcon, 
   ChevronDownIcon,
   PhoneIcon,
-  EnvelopeIcon 
+  EnvelopeIcon,
+  ArrowRightStartOnRectangleIcon
 } from '@heroicons/react/24/outline';
+import { auth } from '@/auth';
+import { Suspense } from 'react';
+import LoginToast from '@/app/ui/login-toast';
+import Navbar from '@/app/ui/navbar';
 
-export default function Page() {
+export default async function Page() {
+  const session = await auth();
+
   return (
     <main className="min-h-screen bg-white">
-      {/* Navbar Section */}
-      <nav className="flex items-center justify-between p-4 px-6 md:px-12 bg-white border-b border-gray-100 shadow-sm sticky top-0 z-50">
-        <div className="flex items-center gap-2">
-          {/* Logo Perusahaan */}
-          <div className="relative w-32 h-10 md:w-40 md:h-12 overflow-hidden">
-            <Image 
-              src="/logo.png" 
-              alt="Maidev Express Logo" 
-              fill
-              className="object-contain object-left"
-            />
-          </div>
-        </div>
-        
-        {/* Desktop Menu */}
-        <div className="hidden md:flex items-center gap-6 text-sm font-medium text-gray-700">
-          <Link href="#" className="hover:text-emerald-600 flex items-center gap-1">Order <ChevronDownIcon className="w-4 h-4"/></Link>
-          <Link href="#" className="hover:text-emerald-600 flex items-center gap-1">Search <ChevronDownIcon className="w-4 h-4"/></Link>
-          <Link href="#" className="hover:text-emerald-600 flex items-center gap-1">International <ChevronDownIcon className="w-4 h-4"/></Link>
-          <Link href="#" className="hover:text-emerald-600 flex items-center gap-1">Services <ChevronDownIcon className="w-4 h-4"/></Link>
-          <Link href="#" className="hover:text-emerald-600 flex items-center gap-1">Information <ChevronDownIcon className="w-4 h-4"/></Link>
-          <Link href="#" className="hover:text-emerald-600 flex items-center gap-1">About Us <ChevronDownIcon className="w-4 h-4"/></Link>
-        </div>
+      <Suspense fallback={null}>
+        {session?.user?.name && <LoginToast userName={session.user.name} />}
+      </Suspense>
 
-        {/* Right actions */}
-        <div className="flex items-center gap-4">
-          <Link 
-            href="/login" 
-            className="hidden md:inline-block bg-emerald-500 hover:bg-emerald-600 text-white px-5 py-2 rounded-md font-medium text-sm transition-colors"
-          >
-            Login / Register
-          </Link>
-          <div className="flex items-center gap-1 text-sm font-medium text-gray-700 cursor-pointer hover:text-emerald-600">
-            <GlobeAltIcon className="w-5 h-5" />
-            <span>Indonesian</span>
-            <ChevronDownIcon className="w-3 h-3" />
-          </div>
-        </div>
-      </nav>
+      <Navbar activeRoute="/" />
 
       {/* Hero Section */}
       <section className="bg-emerald-600 w-full py-24 px-6 md:px-12 text-center text-white flex flex-col items-center justify-center relative overflow-hidden">
@@ -66,15 +38,23 @@ export default function Page() {
           <h1 className={`${poppins.className} text-4xl md:text-5xl font-bold mb-6 leading-tight`}>
             Siap Mengirim Paket?
           </h1>
-          <p className="text-lg md:text-xl mb-10 text-emerald-50 max-w-2xl">
-            Login sekarang dan nikmati berbagai kemudahan pengiriman Anda dengan <span className="font-semibold text-emerald-200">MAIDEV EXPRESS</span>
-          </p>
-          <Link 
-            href="/login" 
-            className="bg-white text-emerald-600 font-bold py-3 px-8 rounded-full hover:bg-emerald-50 shadow-lg transition-transform hover:-translate-y-1"
-          >
-            Login / Register Sekarang
-          </Link>
+          {session ? (
+            <p className="text-lg md:text-xl mb-10 text-emerald-50 max-w-2xl">
+              Kirim dan lacak paket Anda dengan mudah bersama <span className="font-semibold text-emerald-200">MAIDEV EXPRESS</span>
+            </p>
+          ) : (
+            <>
+              <p className="text-lg md:text-xl mb-10 text-emerald-50 max-w-2xl">
+                Login sekarang dan nikmati berbagai kemudahan pengiriman Anda dengan <span className="font-semibold text-emerald-200">MAIDEV EXPRESS</span>
+              </p>
+              <Link 
+                href="/register" 
+                className="bg-white text-emerald-600 font-bold py-3 px-8 rounded-full hover:bg-emerald-50 shadow-lg transition-transform hover:-translate-y-1"
+              >
+                Login / Register Sekarang
+              </Link>
+            </>
+          )}
         </div>
       </section>
 

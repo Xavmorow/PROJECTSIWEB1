@@ -1,4 +1,5 @@
 import postgres from 'postgres';
+import { neon } from '@neondatabase/serverless';
 import {
   CustomerField,
   CustomersTableType,
@@ -214,5 +215,20 @@ export async function fetchFilteredCustomers(query: string) {
   } catch (err) {
     console.error('Database Error:', err);
     throw new Error('Failed to fetch customer table.');
+  }
+}
+
+// Fungsi untuk melakukan query ke Neon
+export async function getUser(email: string) {
+  // Menggunakan POSTGRES_URL sesuai environment file proyek ini
+  const sql = neon(process.env.POSTGRES_URL!);
+  
+  try {
+    const user = await sql`SELECT * FROM users WHERE email = ${email}`;
+    // Mengembalikan user pertama yang ditemukan
+    return user[0];
+  } catch (error) {
+    console.error('Failed to fetch user:', error);
+    throw new Error('Failed to fetch user.');
   }
 }
